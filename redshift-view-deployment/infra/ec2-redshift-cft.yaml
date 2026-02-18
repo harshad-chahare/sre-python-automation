@@ -1,1 +1,73 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EC2 Instance Provisioned Using AWS CloudFormation
+
+Parameters:
+
+  ImageId:
+    Type: AWS::EC2::Image::Id
+    Description: AMI ID for the EC2 instance
+
+  InstanceType:
+    Type: String
+    Default: t3.medium
+    AllowedValues:
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+    Description: EC2 instance type
+
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Subnet where EC2 will be deployed
+
+  SecurityGroupIds:
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    Description: Security Groups to attach to EC2
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Existing EC2 Key Pair for SSH access
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - qa
+      - stg
+      - prod
+    Description: Deployment environment
+
+Resources:
+
+  OpsEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds: !Ref SecurityGroupIds
+      KeyName: !Ref KeyName
+      DisableApiTermination: false
+
+      Tags:
+        - Key: Name
+          Value: !Sub "${Environment}-ops-instance"
+
+        - Key: Environment
+          Value: !Ref Environment
+
+        - Key: Project
+          Value: redshift-view-deployment
+
+Outputs:
+
+  InstanceId:
+    Description: EC2 Instance ID
+    Value: !Ref OpsEC2Instance
+
+  PublicIp:
+    Description: Public IP Address
+    Value: !GetAtt OpsEC2Instance.PublicIp
 
