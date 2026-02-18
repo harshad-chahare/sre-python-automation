@@ -7,6 +7,7 @@ import logging
 import requests
 import pandas as pd
 from datetime import datetime
+from send_email_datalakeops import send_email_ses
 from boto3.dynamodb.types import TypeSerializer, TypeDeserializer
 from botocore.exceptions import ClientError
 
